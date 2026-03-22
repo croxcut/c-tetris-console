@@ -1,0 +1,33 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'   # triggers on tags like v1.0.0, v2.3.1
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # needed to create releases
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # full history for changelog generation
+
+      # Optional: build step (remove if not needed)
+      - name: Build
+        run: |
+          echo "Add your build commands here"
+          # npm ci && npm run build
+          # go build ./...
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true   # auto-generates changelog from commits
+          # files: |                     # uncomment to attach build artifacts
+          #   dist/*.zip
+          #   dist/*.tar.gz
