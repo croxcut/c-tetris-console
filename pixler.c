@@ -52,8 +52,8 @@ void draw_border(void) {
     printf("+");
 
     for (int i = 1; i < bh - 1; i++) {
-        gotoxy(bx, by + i);       printf("|");
-        gotoxy(bx + bw - 1, by + i); printf("|");
+        gotoxy(bx, by + i);           printf("|");
+        gotoxy(bx + bw - 1, by + i);  printf("|");
     }
 
     gotoxy(bx, by + bh - 1);
@@ -61,32 +61,38 @@ void draw_border(void) {
     for (int i = 0; i < bw - 2; i++) printf("-");
     printf("+");
 
-    int px = BOARD_X + BOARD_W * 2 + 3;
+    int px = bx + bw + 1;   
 
-    // NEXT panel
-    gotoxy(px, by); printf("+-NEXT------+");
-    for (int i = 1; i <= 6; i++) { gotoxy(px, by + i); printf("|           |"); }
+    gotoxy(px, by);     printf("+-NEXT------+");
+    for (int i = 1; i <= 6; i++) {
+        gotoxy(px, by + i);
+        printf("|           |");
+    }
     gotoxy(px, by + 7); printf("+-----------+");
 
-    // HOLD panel
     gotoxy(px, by + 9);  printf("+-HOLD------+");
-    for (int i = 1; i <= 4; i++) { gotoxy(px, by + 9 + i); printf("|           |"); }
-    gotoxy(px, by + 14); printf("+-----------+");
+    for (int i = 1; i <= 6; i++) {
+        gotoxy(px, by + 9 + i);
+        printf("|           |");
+    }
+    gotoxy(px, by + 16); printf("+-----------+");
 
-    // STATS panel
-    gotoxy(px, by + 16); printf("+-STATS-----+");
-    for (int i = 1; i <= 8; i++) { gotoxy(px, by + 16 + i); printf("|           |"); }
-    gotoxy(px, by + 25); printf("+-----------+");
+    gotoxy(px, by + 18); printf("+-STATS-----+");
+    for (int i = 1; i <= 10; i++) {
+        gotoxy(px, by + 18 + i);
+        printf("|           |");
+    }
+    gotoxy(px, by + 29); printf("+-----------+");
 
-    // Controls
     set_color(COLOR_LGRAY, COLOR_BLACK);
-    gotoxy(px, by + 27); printf(" Arrows: Move ");
-    gotoxy(px, by + 28); printf(" Up:     Rotate");
-    gotoxy(px, by + 29); printf(" Space:  Drop  ");
-    gotoxy(px, by + 30); printf(" C:      Hold  ");
-    gotoxy(px, by + 31); printf(" P:      Pause ");
-    gotoxy(px, by + 32); printf(" S:      Save  ");
-    gotoxy(px, by + 33); printf(" Q:      Quit  ");
+    gotoxy(px, by + 31); printf(" Arrows: Move ");
+    gotoxy(px, by + 32); printf(" Up:     Rotate");
+    gotoxy(px, by + 33); printf(" Space:  Drop  ");
+    gotoxy(px, by + 34); printf(" C:      Hold  ");
+    gotoxy(px, by + 35); printf(" P:      Pause ");
+    gotoxy(px, by + 36); printf(" S:      Save  ");
+    gotoxy(px, by + 37); printf(" Q:      Quit  ");
+    set_color(COLOR_LWHITE, COLOR_BLACK);
 }
 
 void draw_board(GameState *gs) {
@@ -133,13 +139,36 @@ void draw_piece(GameState *gs, int draw_ghost) {
     set_color(COLOR_LWHITE, COLOR_BLACK);
 }
 
-static void draw_piece_preview(int piece, int x, int y) {
-    for (int row = 0; row < 4; row++) { gotoxy(x, y + row); printf("     "); }
+static void draw_piece_preview(int piece, int px_panel, int py_panel) {
+    for (int r = 0; r < 4; r++) {
+        gotoxy(px_panel + 1, py_panel + 2 + r);
+        printf("           ");  
+    }
+
     if (piece < 0) return;
-    for (int row = 0; row < 4; row++) {
-        for (int col = 0; col < 4; col++) {
-            if (PIECES[piece][0][row][col]) {
-                gotoxy(x + col * 2, y + row);
+
+    int min_col = 4, max_col = -1, min_row = 4, max_row = -1;
+    for (int r = 0; r < 4; r++) {
+        for (int c = 0; c < 4; c++) {
+            if (PIECES[piece][0][r][c]) {
+                if (c < min_col) min_col = c;
+                if (c > max_col) max_col = c;
+                if (r < min_row) min_row = r;
+                if (r > max_row) max_row = r;
+            }
+        }
+    }
+
+    int piece_w = (max_col - min_col + 1) * 2; 
+    int piece_h =  max_row - min_row + 1;
+
+    int x_off = px_panel + 1 + (11 - piece_w) / 2;
+    int y_off = py_panel + 2 + (4 - piece_h) / 2;
+
+    for (int r = 0; r < 4; r++) {
+        for (int c = 0; c < 4; c++) {
+            if (PIECES[piece][0][r][c]) {
+                gotoxy(x_off + (c - min_col) * 2, y_off + (r - min_row));
                 set_color(PIECE_COLORS[piece], COLOR_BLACK);
                 printf("[]");
             }
@@ -149,28 +178,36 @@ static void draw_piece_preview(int piece, int x, int y) {
 }
 
 void draw_next(GameState *gs) {
-    draw_piece_preview(gs->next_piece, BOARD_X + BOARD_W * 2 + 4, BOARD_Y);
+    int px = (BOARD_X - 1) + (BOARD_W * 2 + 2) + 1;
+    int py = BOARD_Y - 1;
+    draw_piece_preview(gs->next_piece, px, py);
 }
 
 void draw_hold(GameState *gs) {
+    int px = (BOARD_X - 1) + (BOARD_W * 2 + 2) + 1;
+    int py = (BOARD_Y - 1) + 9;   
+
     if (gs->hold_used) set_color(COLOR_LGRAY, COLOR_BLACK);
-    draw_piece_preview(gs->hold_piece, BOARD_X + BOARD_W * 2 + 4, BOARD_Y + 10);
+    draw_piece_preview(gs->hold_piece, px, py);
     set_color(COLOR_LWHITE, COLOR_BLACK);
 }
 
 void draw_stats(GameState *gs) {
-    int px = BOARD_X + BOARD_W * 2 + 3;
-    int py = BOARD_Y + 16;
+    int by    = BOARD_Y - 1;
+    int px    = (BOARD_X - 1) + (BOARD_W * 2 + 2) + 1;
+    int py    = by + 18;
 
-    set_color(COLOR_LWHITE,   COLOR_BLACK); gotoxy(px+1, py+1); printf(" SCORE:");
-    set_color(COLOR_LYELLOW,  COLOR_BLACK); gotoxy(px+1, py+2); printf(" %-9d", gs->score);
-    set_color(COLOR_LWHITE,   COLOR_BLACK); gotoxy(px+1, py+3); printf(" LEVEL:");
-    set_color(COLOR_LCYAN,    COLOR_BLACK); gotoxy(px+1, py+4); printf(" %-9d", gs->level);
-    set_color(COLOR_LWHITE,   COLOR_BLACK); gotoxy(px+1, py+5); printf(" LINES:");
-    set_color(COLOR_LGREEN,   COLOR_BLACK); gotoxy(px+1, py+6); printf(" %-9d", gs->lines);
-    set_color(COLOR_LWHITE,   COLOR_BLACK); gotoxy(px+1, py+7); printf(" PIECES:");
-    set_color(COLOR_LMAGENTA, COLOR_BLACK); gotoxy(px+1, py+8); printf(" %-9d", gs->total_pieces);
-    set_color(COLOR_LWHITE,   COLOR_BLACK);
+    set_color(COLOR_LWHITE,   COLOR_BLACK); gotoxy(px + 1, py + 1);  printf(" SCORE:");
+    set_color(COLOR_LYELLOW,  COLOR_BLACK); gotoxy(px + 1, py + 2);  printf(" %-9d", gs->score);
+    set_color(COLOR_LWHITE,   COLOR_BLACK); gotoxy(px + 1, py + 3);  printf(" LEVEL:");
+    set_color(COLOR_LCYAN,    COLOR_BLACK); gotoxy(px + 1, py + 4);  printf(" %-9d", gs->level);
+    set_color(COLOR_LWHITE,   COLOR_BLACK); gotoxy(px + 1, py + 5);  printf(" LINES:");
+    set_color(COLOR_LGREEN,   COLOR_BLACK); gotoxy(px + 1, py + 6);  printf(" %-9d", gs->lines);
+    set_color(COLOR_LWHITE,   COLOR_BLACK); gotoxy(px + 1, py + 7);  printf(" PIECES:");
+    set_color(COLOR_LMAGENTA, COLOR_BLACK); gotoxy(px + 1, py + 8);  printf(" %-9d", gs->total_pieces);
+    set_color(COLOR_LWHITE,   COLOR_BLACK); gotoxy(px + 1, py + 9);  printf("           ");
+    set_color(COLOR_LWHITE,   COLOR_BLACK); gotoxy(px + 1, py + 10); printf("           ");
+    set_color(COLOR_LWHITE, COLOR_BLACK);
 }
 
 void draw_ui(GameState *gs) {
@@ -583,7 +620,7 @@ void game_loop(GameState *gs) {
 
 int main(void) {
     SetConsoleTitle("Pixler");
-    system("mode con: cols=60 lines=38");
+    system("mode con: cols=60 lines=40");
     hide_cursor();
     clear_screen();
     set_color(COLOR_LWHITE, COLOR_BLACK);
