@@ -3,31 +3,29 @@ name: Create Release
 on:
   push:
     tags:
-      - 'v*.*.*'   # triggers on tags like v1.0.0, v2.3.1
+      - 'v*.*.*'
 
 jobs:
   release:
     runs-on: ubuntu-latest
     permissions:
-      contents: write   # needed to create releases
+      contents: write
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # full history for changelog generation
+          fetch-depth: 0
 
-      # Optional: build step (remove if not needed)
-      - name: Build
-        run: |
-          echo "Add your build commands here"
-          # npm ci && npm run build
-          # go build ./...
+      - name: Install MinGW (Windows cross-compiler)
+        run: sudo apt-get install -y mingw-w64
+
+      - name: Build Windows .exe
+        run: make CC=x86_64-w64-mingw32-gcc
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          generate_release_notes: true   # auto-generates changelog from commits
-          # files: |                     # uncomment to attach build artifacts
-          #   dist/*.zip
-          #   dist/*.tar.gz
+          generate_release_notes: true
+          files: |
+            *.exe
