@@ -442,11 +442,11 @@ void show_scores(void) {
 
 static void draw_title(void) {
     set_color(COLOR_LCYAN, COLOR_BLACK);
-    gotoxy(6, 1); printf("  ####   ##  ##  ##  ##     ##  ##  ");
-    gotoxy(6, 2); printf("  ## ##  ##  ##  ##  ##     ##  ##  ");
-    gotoxy(6, 3); printf("  ####   ##    ##    ##       ##    ");
-    gotoxy(6, 4); printf("  ##     ##  ##  ##  ##     ##  ##  ");
-    gotoxy(6, 5); printf("  ##     ##  ##  ##  #####  ##  ##  ");
+    // gotoxy(6, 1); printf("  ####   ##  ##  ##  ##     ##  ##  ");
+    // gotoxy(6, 2); printf("  ## ##  ##  ##  ##  ##     ##  ##  ");
+    // gotoxy(6, 3); printf("  ####   ##    ##    ##       ##    ");
+    // gotoxy(6, 4); printf("  ##     ##  ##  ##  ##     ##  ##  ");
+    // gotoxy(6, 5); printf("  ##     ##  ##  ##  #####  ##  ##  ");
     set_color(COLOR_LWHITE, COLOR_BLACK);
 }
 
