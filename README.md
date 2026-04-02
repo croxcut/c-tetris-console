@@ -1,4 +1,4 @@
-# Pixler — Console Falling Block Game
+# Pixler Console Falling Block Game
 
 A console-based falling block puzzle game for Windows, written in C using the Win32 API.
 Implements standard falling block gameplay rules, scoring, piece rotation, ghost piece,
