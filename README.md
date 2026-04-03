@@ -7,7 +7,7 @@ hold queue, save/load, and a CSV high-score system.
 > **Note on the Pixl Engine**
 >
 > Pixler was originally intended to be built on top of the
-> **[Pixl Engine](https://github.com/croxcut/Pixl-Source-tree)** — a custom engine
+> **[Pixl Engine](https://github.com/croxcut/Pixl-Source-tree)** a custom engine
 > developed alongside this project. However, due to the current nature and stage of
 > the Pixl engine, it was not feasible to use it as the foundation for this game at
 > this time. As a result, Pixler runs directly on the Windows console via the Win32 API
@@ -18,7 +18,7 @@ hold queue, save/load, and a CSV high-score system.
 
 > **Disclaimer**
 >
-> Pixler is an independent hobby project — a falling block puzzle game built for
+> Pixler is an independent hobby project a falling block puzzle game built for
 > educational and personal purposes. This project is not affiliated with, endorsed by,
 > or sponsored by The Tetris Company or Tetris Holding, LLC.
 > Tetris® is a registered trademark of Tetris Holding, LLC.
